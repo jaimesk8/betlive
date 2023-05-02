@@ -17,29 +17,18 @@ app.use(express.static('public'))
 
 
 //method results GET 
-//app.get('/get', (req,res) => {
-
-    //Puppeteer library
-const pt= require('puppeteer')
-   
+app.get('/get', (req,res) => {
+    
+        //betano
     async function getText(){
-        browser = await puppeteer.launch({ headless: false });
+        browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
         // Reset the viewport for more results in single page of google maps.
-        await page.setViewport({ width: 500, height: 3000 })
+        await page.setViewport({ width: 500, height: 3000 });
         //launch URL
-        await page.goto('https://www.betano.pt/sport/futebol/portugal/primeira-liga/17083/')
-        await page.waitForSelector('.landing-page-modal__primary-container__box')
-        await page.click('#landing-page-modal')
-        
-        //team: el.querySelector(".GTM-event-link"),
-       // teamB: el.querySelector(".")?.textContent.trim(),
-       // time: el.querySelector(".MW4etd"),
-       // hour: el.querySelector(".tw-mr-0")?.textContent.trim(),
-        //tittle: el.querySelector(".selections__selection__title"),
-       // odd: el.querySelector(".selections__selection__odd"),
-       // Scrapes the data from the page and them to de databases
-        // Scrooll to the finla page
+        await page.goto('https://www.betano.pt/sport/futebol/portugal/primeira-liga/17083/');
+        await page.waitForSelector('#landing-page-modal');
+        await page.click('#landing-page-modal');
 
         // Get page data
         const quotes = await page.evaluate(() => {
@@ -52,41 +41,23 @@ const pt= require('puppeteer')
             return Array.from(quoteList).map((quote) => {
             // Fetch the sub-elements from the previously fetched quote element
             // Get the displayed text and return it (`.innerText`)
-            const team = quote.querySelector(".GTM-event-link").innerText;
-            const time = quote.querySelector(".events-list__grid__info__datetime").innerText;
+            const teamA = quote.querySelector(".events-list__grid__info__main__participants").innerText.replace('\n', ' ');
+            const time = quote.querySelector(".events-list__grid__info__datetime").innerText.replace('\n', ' ');
            // const tittle = quote.querySelector(".selections__selection").innerText;
-            const odd = quote.querySelector(".events-list__grid__event")
+            //const odd = quote.querySelector(".selections__selection__odd");
 
-            return { team, time, odd };
+            return { teamA, time };
             });
         });
 
         // Display the quotes
         console.log("Betano", quotes);
     
-        // Close the browser
-        await browser.close();
-    }
-    
-    getText()
+       // await page.waitForTimeout(4000);
 
-    async function getText1(){
-        browser = await puppeteer.launch({ headless: false });
-        const page = await browser.newPage();
-        // Reset the viewport for more results in single page of google maps.
-        await page.setViewport({ width: 1000, height: 3000 })
-        //launch URL
-        await page.goto('https://www.betclic.pt/futebol-s1/portugal-primeira-liga-c32')
+      //BETCLIC
+        await page.goto('https://www.betclic.pt/futebol-s1/portugal-primeira-liga-c32');
         
-        //team: el.querySelector(".GTM-event-link"),
-       // teamB: el.querySelector(".")?.textContent.trim(),
-       // time: el.querySelector(".MW4etd"),
-       // hour: el.querySelector(".tw-mr-0")?.textContent.trim(),
-        //tittle: el.querySelector(".selections__selection__title"),
-       // odd: el.querySelector(".selections__selection__odd"),
-       // Scrapes the data from the page and them to de databases
-        // Scrooll to the finla page
-
         // Get page data
         const quotess = await page.evaluate(() => {
             // Fetch the first element with class "quote"
@@ -98,25 +69,31 @@ const pt= require('puppeteer')
             return Array.from(quoteListt).map((quote) => {
             // Fetch the sub-elements from the previously fetched quote element
             // Get the displayed text and return it (`.innerText`)
-            const team = quote.querySelector(".scoreboard_contestantLabel");
-            const time = quote.querySelector(".events-scoreboard_info");
-           // const tittle = quote.querySelector(".selections__selection").innerText;
-            const odd = quote.querySelector(".oddValue")
+            //const info = quote.querySelector(".breadcrumb_itemLabel").innerText.replace('\n',' ');
+            const team = quote.querySelector(".market_odds").innerText.replaceAll('\n',' '); 
+            //const time = quote.querySelector(".scoreboard_hour").textContent.trim();
+            
+           // const draw = quote.querySelector(".oddValue").textContent;
 
-            return { team, time, odd };
+            return {team};
             });
         });
 
         // Display the quotes
         console.log("Betclic", quotess);
+
+        const array = quotess.concat(quotes);
+        const data = JSON.stringify(array); 
+        res.json(data);
     
         // Close the browser
         await browser.close();
+        
+
+        
     }
 
-    getText1()
+    getText();
 
-//});//results get
-
-
+});
 app.listen(port, () => console.log('Server running at http://127.0.0.1:3000/'));

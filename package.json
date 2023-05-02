@@ -1,0 +1,25 @@
+{
+  "name": "betlive",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaimesk8/betlive.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jaimesk8/betlive/issues"
+  },
+  "homepage": "https://github.com/jaimesk8/betlive#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "puppeteer": "^19.11.1",
+    "puppeteer-cluster": "^0.23.0"
+  }
+}
