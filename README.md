@@ -1,3 +1,3 @@
 # betlive
 
-this is a node.js application based on a web scrapper with puppeteer. The goal is to comapre data from sports sites. 
+this is a node.js application based on a web scrapper with puppeteer. The goal is to compare data from sports sites. 
