@@ -17,7 +17,7 @@ app.use(express.static('public'))
 
 
 //method results GET 
-app.get('/get', (req,res) => {
+app.get('/betano', (req,res) => {
     
         //betano
     async function getText(){
@@ -41,8 +41,8 @@ app.get('/get', (req,res) => {
             return Array.from(quoteList).map((quote) => {
             // Fetch the sub-elements from the previously fetched quote element
             // Get the displayed text and return it (`.innerText`)
-            const teamA = quote.querySelector(".events-list__grid__info__main__participants").innerText.replace('\n', ' ');
-            const time = quote.querySelector(".events-list__grid__info__datetime").innerText.replace('\n', ' ');
+            const teamA = quote.querySelector(".events-list__grid__info__main__participants").innerText.replace('\n', ' - ');
+            const time = quote.querySelector(".events-list__grid__info__datetime").innerText.replace('\n', ' - ');
            // const tittle = quote.querySelector(".selections__selection").innerText;
             //const odd = quote.querySelector(".selections__selection__odd");
 
@@ -55,9 +55,31 @@ app.get('/get', (req,res) => {
     
        // await page.waitForTimeout(4000);
 
-      //BETCLIC
-        await page.goto('https://www.betclic.pt/futebol-s1/portugal-primeira-liga-c32');
+       // const array = quotess.concat(quotes);
+        //const data = JSON.stringify(array); 
+        res.json(quotes);
+    
+        // Close the browser
+        await browser.close();
         
+    }
+
+    getText();
+
+});
+
+
+app.get('/betclic', (res,req) => {
+
+    //BETCLIC
+    async function getText1(){
+        browser = await puppeteer.launch({ headless: true });
+        const page = await browser.newPage();
+        // Reset the viewport for more results in single page of google maps.
+        await page.setViewport({ width: 500, height: 3000 });
+
+        await page.goto('https://www.betclic.pt/futebol-s1/portugal-primeira-liga-c32');
+            
         // Get page data
         const quotess = await page.evaluate(() => {
             // Fetch the first element with class "quote"
@@ -73,27 +95,17 @@ app.get('/get', (req,res) => {
             const team = quote.querySelector(".market_odds").innerText.replaceAll('\n',' '); 
             //const time = quote.querySelector(".scoreboard_hour").textContent.trim();
             
-           // const draw = quote.querySelector(".oddValue").textContent;
+        // const draw = quote.querySelector(".oddValue").textContent;
 
             return {team};
             });
         });
 
         // Display the quotes
-        console.log("Betclic", quotess);
-
-        const array = quotess.concat(quotes);
-        const data = JSON.stringify(array); 
-        res.json(data);
-    
-        // Close the browser
-        await browser.close();
-        
-
-        
+        console.log("Betclic", quotess)
+   
     }
 
-    getText();
-
-});
+    getText1();
+})
 app.listen(port, () => console.log('Server running at http://127.0.0.1:3000/'));

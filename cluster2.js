@@ -1,23 +1,20 @@
 const { Cluster } = require('puppeteer-cluster');
 
 (async () => {
-  const cluster = await Cluster.launch({
-    concurrency: Cluster.CONCURRENCY_CONTEXT,
-    maxConcurrency: 2,
-     puppeteerOptions: {
-      headless: false,
-      defaultViewport: false,
-      userDataDir: "./tmp",
-    },
-  });
+    // Create a cluster with 2 workers
+    const cluster = await Cluster.launch({
+        concurrency: Cluster.CONCURRENCY_CONTEXT,
+        maxConcurrency: 2,
+        puppeteerOptions: {
+            headless: false
+        },
+    });
 
-  await cluster.task(async ({ page, data: url}) => {
-    await page.goto(url);
-    await page.waitForSelector('#landing-page-modal');
-    await page.click('#landing-page-modal');
-
-        // Get page data
-        const quotes = await page.evaluate(() => {
+    // Define a task
+    await cluster.task(async ({ page, data: url }) => {
+        await page.goto(url);
+        
+        const pageTitle = await page.evaluate(() => {
             // Fetch the first element with class "quote"
             // Get the displayed text and returns it
             const quoteList = document.querySelectorAll(".events-list__grid__info");
@@ -35,18 +32,23 @@ const { Cluster } = require('puppeteer-cluster');
             return { teamA, time };
             });
         });
+        return pageTitle;
 
-        // Display the quotes
-        console.log("Betano", quotes);
-
-        res.json(quotes);
         
-  });
+    });
 
-  cluster.queue('https://www.betano.pt/sport/futebol/portugal/primeira-liga/17083/');
-  cluster.queue('https://www.betclic.pt/futebol-s1/portugal-primeira-liga-c32');
-  // many more pages
+    // Use try-catch block as "execute" will throw instead of using events
+    try {
+        // Execute the tasks one after another via execute
+        const result1 = await cluster.execute('https://www.betano.pt/sport/futebol/portugal/primeira-liga/17083/');
+        console.log(result1);
+        const result2 = await cluster.execute('https://www.betclic.pt/futebol-s1/portugal-primeira-liga-c32');
+        console.log(result2);
+    } catch (err) {
+        // Handle crawling error
+    }
 
-  await cluster.idle();
-  await cluster.close();
+    // Shutdown after everything is done
+    await cluster.idle();
+    await cluster.close();
 })();
