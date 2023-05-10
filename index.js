@@ -34,19 +34,19 @@ app.get('/betano', (req,res) => {
         const quotes = await page.evaluate(() => {
             // Fetch the first element with class "quote"
             // Get the displayed text and returns it
-            const quoteList = document.querySelectorAll(".events-list__grid__info");
+            const quoteList = document.querySelectorAll(".events-list__grid__event");
 
             // Convert the quoteList to an iterable array
             // For each quote fetch the text and author
             return Array.from(quoteList).map((quote) => {
             // Fetch the sub-elements from the previously fetched quote element
             // Get the displayed text and return it (`.innerText`)
-            const teamA = quote.querySelector(".events-list__grid__info__main__participants").innerText.replace('\n', ' - ');
-            const time = quote.querySelector(".events-list__grid__info__datetime").innerText.replace('\n', ' - ');
+            const teamA = quote.querySelector(".events-list__grid__info__main__participants").innerText.replaceAll('\n', ' - ');
+            const time = quote.querySelector(".events-list__grid__info__datetime").innerText.replaceAll('\n', ' - ');
            // const tittle = quote.querySelector(".selections__selection").innerText;
-            //const odd = quote.querySelector(".selections__selection__odd");
+            const odd = quote.querySelector(".selections").innerText.replaceAll('\n', ' - ');
 
-            return { teamA, time };
+            return { teamA, time, odd };
             });
         });
 
@@ -69,7 +69,7 @@ app.get('/betano', (req,res) => {
 });
 
 
-app.get('/betclic', (res,req) => {
+app.get('/betclic', (req,res) => {
 
     //BETCLIC
     async function getText1(){
@@ -92,20 +92,32 @@ app.get('/betclic', (res,req) => {
             // Fetch the sub-elements from the previously fetched quote element
             // Get the displayed text and return it (`.innerText`)
             //const info = quote.querySelector(".breadcrumb_itemLabel").innerText.replace('\n',' ');
-            const team = quote.querySelector(".market_odds").innerText.replaceAll('\n',' '); 
+            const team = quote.querySelector(".market_odds").innerText.replaceAll('\n',' - ').match(/[a-zA-Z]+/g);
+            
+            //const odd = quote.querySelector(".market_odds").innerText.match(/\d,\d{2}/g); 
+            //const time = quote.querySelector(".scoreboard_hour").textContent.trim();
+            
+            
+            const odd = quote.querySelector(".market_odds").innerText.match(/\d+,\d+/g); 
+            const resultodd = odd.join("  -  ");
             //const time = quote.querySelector(".scoreboard_hour").textContent.trim();
             
         // const draw = quote.querySelector(".oddValue").textContent;
 
-            return {team};
+            return {team, resultodd};
             });
         });
 
-        // Display the quotes
-        console.log("Betclic", quotess)
-   
+         // Display the quotes
+         console.log("Betclic", quotess);
+         
+          res.json(quotess);
+      
+          // Close the browser
+          await browser.close();
     }
 
     getText1();
 })
+
 app.listen(port, () => console.log('Server running at http://127.0.0.1:3000/'));

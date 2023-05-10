@@ -11,25 +11,14 @@ body {
     justify-content: center;
     height: 100vh;
     align-items: center;
-    background-color: rgb(232, 224, 213);
+    background-color: rgb(245, 40, 40);
 }
 
 h1 {
     padding: 10px;
 }
 
-.departures {
-    background-color: rgb(6,6,6);
-    border-radius: 10px;
-    padding: 10px;
-}
-
-.departures table {
-    background-color: rgb(46,46,46);
-    text-align: left;
-}
-
-.departures table div {
+.div {
     border: solid 4px rgb(26,26,26);
     background-color: rgb(0,0,0);
     min-width: 20px;
@@ -53,22 +42,3 @@ h1 {
     }
 }
 
-#time {
-    width: 160px;
-}
-
-#destination {
-    width: 700px;
-}
-
-#flight {
-    width: 205px;
-}
-
-#gate {
-    width: 135px;
-}
-
-#remarks {
-    width: 260px;
-}
