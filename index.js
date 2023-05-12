@@ -21,7 +21,7 @@ app.get('/betano', (req,res) => {
     
         //betano
     async function getText(){
-        browser = await puppeteer.launch({ headless: true });
+        browser = await puppeteer.launch({ headless: false });
         const page = await browser.newPage();
         // Reset the viewport for more results in single page of google maps.
         await page.setViewport({ width: 500, height: 3000 });
@@ -73,7 +73,7 @@ app.get('/betclic', (req,res) => {
 
     //BETCLIC
     async function getText1(){
-        browser = await puppeteer.launch({ headless: true });
+        browser = await puppeteer.launch({ headless: false });
         const page = await browser.newPage();
         // Reset the viewport for more results in single page of google maps.
         await page.setViewport({ width: 500, height: 3000 });
